@@ -1,0 +1,73 @@
+const TelegramBot = require("node-telegram-bot-api");
+const env = require("dotenv");
+
+env.config();
+
+// Replace with your token from @BotFather
+const token = process.env.TOKEN;
+
+const bot = new TelegramBot(token, { polling: true });
+
+// Start command
+bot.onText(/\/start/, (msg) => {
+  bot.sendMessage(msg.chat.id, "👋 Welcome to Aviator Predictor Bot!");
+});
+
+// Predict command
+bot.onText(/\/predict/, (msg) => {
+  const prediction = getPrediction();
+  bot.sendMessage(msg.chat.id, `🎯 Predicted multiplier: ${prediction}x`);
+});
+
+bot.on("message", (msg) => {
+  console.log("Your chat ID:", msg.chat.id);
+});
+
+let lastPrediction = 2;
+
+function getPrediction() {
+  const trend = Math.random() > 0.5 ? 0.1 : -0.1;
+  lastPrediction = Math.max(1.1, Math.min(4.0, lastPrediction + trend));
+  return lastPrediction.toFixed(2);
+}
+
+let subscribers = [];
+bot.onText(/\/subscribe/, (msg) => {
+  const chatId = msg.chat.id;
+  if (!subscribers.includes(chatId)) {
+    subscribers.push(chatId);
+    bot.sendMessage(chatId, "✅ Subscribed to auto predictions!");
+  } else {
+    bot.sendMessage(chatId, "ℹ️ You are already subscribed.");
+  }
+});
+
+bot.onText(/\/unsubscribe/, (msg) => {
+  const chatId = msg.chat.id;
+  subscribers = subscribers.filter((id) => id !== chatId);
+  bot.sendMessage(chatId, "❌ Unsubscribed from auto predictions.");
+});
+
+setInterval(() => {
+  const prediction = getPrediction();
+  subscribers.forEach((chatId) => {
+    bot.sendMessage(chatId, `🤖 Auto Prediction: ${prediction}x`);
+  });
+}, 60000);
+
+console.log(getPrediction());
+
+bot.onText(/\/help/, (msg) => {
+  bot.sendMessage(
+    msg.chat.id,
+    `
+Available Commands:
+/start - Start the bot
+/predict - Get current prediction
+/subscribe - Get predictions every minute
+/unsubscribe - Stop auto predictions
+/help - List of commands
+
+  `
+  );
+});
