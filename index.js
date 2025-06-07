@@ -89,9 +89,9 @@ Available Commands:
 });
 
 // Log user chat IDs when any message is received
-bot.on("message", (msg) => {
-  console.log("Message from chat ID:", msg.chat.id);
-});
+// bot.on("message", (msg) => {
+//   console.log("Message from chat ID:", msg.chat.id);
+// });
 
 // Periodically send auto predictions to subscribers every 60 seconds
 setInterval(() => {
