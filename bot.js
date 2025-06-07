@@ -23,7 +23,9 @@ bot.on("message", (msg) => {
   console.log("Your chat ID:", msg.chat.id);
 });
 
-let lastPrediction = 2;
+let base = new Date().getSeconds();
+let lastPrediction = 1.5 + (base % 25) / 10;
+// let lastPrediction = 5.55
 
 function getPrediction() {
   const trend = Math.random() > 0.5 ? 0.1 : -0.1;
