@@ -6,7 +6,17 @@ env.config();
 // Replace with your token from @BotFather
 const token = process.env.TOKEN;
 
-const bot = new TelegramBot(token, { polling: true });
+const bot = new TelegramBot(token, { polling: false });
+
+bot
+  .deleteWebhook()
+  .then(() => {
+    console.log("Webhook cleared, starting polling...");
+    bot.startPolling();
+  })
+  .catch((err) => {
+    console.error("Error clearing webhook:", err);
+  });
 
 // Start command
 bot.onText(/\/start/, (msg) => {
@@ -57,7 +67,7 @@ setInterval(() => {
   });
 }, 60000);
 
-console.log(getPrediction());
+// console.log(getPrediction());
 
 bot.onText(/\/help/, (msg) => {
   bot.sendMessage(
